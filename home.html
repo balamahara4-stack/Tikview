@@ -23,8 +23,9 @@
         .welcome-card h3 { font-size: 24px; font-weight: 800; }
         .welcome-card p { font-size: 14px; color: #aaa; margin-top: 5px; }
 
-        /* Ads Container */
-        .ad-container { width: 100%; min-height: 100px; margin: 20px 0; text-align: center; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.02); border: 1px dashed #333; }
+        /* Ads Container Styling */
+        .ad-container-top { width: 100%; min-height: 60px; margin: 10px 0; text-align: center; display: flex; justify-content: center; align-items: center; background: transparent; }
+        .ad-container-bottom { width: 100%; min-height: 100px; margin: 20px 0; text-align: center; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.02); border: 1px dashed #333; }
 
         /* Campaign List */
         .section-title { font-size: 14px; font-weight: 700; color: #777; margin: 20px 20px 15px; text-transform: uppercase; letter-spacing: 1px; }
@@ -45,25 +46,8 @@
 
         .empty-state { text-align: center; padding: 50px 20px; color: #555; font-size: 16px; }
 
-        /* FIXED: Floating Action Button - सधैं माथि देखिने गरी */
-        .fab-btn { 
-            position: fixed !important; 
-            bottom: 90px !important; 
-            right: 25px !important; 
-            width: 65px; 
-            height: 65px; 
-            background: #fe2c55; 
-            border-radius: 50%; 
-            display: flex !important; 
-            justify-content: center; 
-            align-items: center; 
-            color: white; 
-            font-size: 28px; 
-            z-index: 999999 !important; 
-            box-shadow: 0 8px 25px rgba(254, 44, 85, 0.4); 
-            text-decoration: none;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        /* FAB */
+        .fab-btn { position: fixed !important; bottom: 90px !important; right: 25px !important; width: 65px; height: 65px; background: #fe2c55; border-radius: 50%; display: flex !important; justify-content: center; align-items: center; color: white; font-size: 28px; z-index: 999999 !important; box-shadow: 0 8px 25px rgba(254, 44, 85, 0.4); text-decoration: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .fab-btn:active { transform: scale(0.85); }
 
         /* Bottom Navigation */
@@ -83,23 +67,31 @@
         </div>
     </div>
 
+    <!-- माथि राखिएको Banner Ad (320x50) -->
+    <div id="top-banner-slot" class="ad-container-top">
+        <script type="text/javascript">
+            atOptions = { 'key' : '6eede0c59a7ac90fa38d5f0548f0e6a8', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/6eede0c59a7ac90fa38d5f0548f0e6a8/invoke.js"></script>
+    </div>
+
     <div class="welcome-card">
         <h3>Welcome Back!</h3>
         <p>Your campaigns are being processed.</p>
     </div>
-
-    <div id="ad-slot-1" class="ad-container"></div>
 
     <div class="section-title">My Running Campaigns</div>
     <div class="campaign-list" id="campaigns-display-engine">
         <div class="empty-state"><i class="fa-solid fa-circle-notch fa-spin"></i><p>Syncing data...</p></div>
     </div>
 
-    <div id="ad-slot-2" class="ad-container"></div>
+    <!-- तल राखिएको Native Banner Ad -->
+    <div id="bottom-native-slot" class="ad-container-bottom">
+        <script async="async" data-cfasync="false" src="https://pl28732749.effectivecpmnetwork.com/76a43149f69231c82a24a42b99e96cb0/invoke.js"></script>
+        <div id="container-76a43149f69231c82a24a42b99e96cb0"></div>
+    </div>
 
-    <a href="add.html" class="fab-btn">
-        <i class="fa-solid fa-plus"></i>
-    </a>
+    <a href="add.html" class="fab-btn"><i class="fa-solid fa-plus"></i></a>
 
     <div class="bottom-nav">
         <a href="home.html" class="nav-item active"><i class="fa-solid fa-rectangle-list fa-lg"></i><span>Campaign</span></a>
@@ -107,6 +99,7 @@
         <a href="future.html" class="nav-item"><i class="fa-solid fa-sliders fa-lg"></i><span>Future</span></a>
     </div>
 
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -123,14 +116,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-
-        function loadAds() {
-            const adCode = '<script async="async" data-cfasync="false" src="https://pl28732749.effectivecpmnetwork.com/76a43149f69231c82a24a42b99e96cb0/invoke.js"><\/script><div id="container-76a43149f69231c82a24a42b99e96cb0"><\/div>';
-            document.getElementById('ad-slot-1').innerHTML = adCode;
-            document.getElementById('ad-slot-2').innerHTML = adCode;
-        }
-        loadAds();
-        setInterval(loadAds, 20000);
 
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
