@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikViews - Final Campaign Setup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f8f9fa; padding-bottom: 100px; color: #333; }
+        
+        /* Header */
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-left i { font-size: 20px; color: #333; cursor: pointer; }
+        .header h2 { font-size: 18px; color: #222; }
+        .coin-display { display: flex; align-items: center; gap: 5px; background: #fff0f3; padding: 6px 12px; border-radius: 20px; font-weight: bold; color: #fe2c55; }
+
+        /* Ads Container Style */
+        .ad-container { width: 100%; min-height: 100px; margin: 15px 0; text-align: center; overflow: hidden; background: #f1f1f1; border-radius: 10px; }
+
+        /* Layout */
+        .preview-card { background: white; margin: 15px; padding: 15px; border-radius: 14px; border: 1px solid #eee; display: flex; align-items: center; gap: 12px; }
+        .preview-icon { width: 50px; height: 50px; background: #f0f0f0; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 20px; color: #fe2c55; }
+        .preview-info { flex: 1; overflow: hidden; }
+        
+        .settings-box { background: #fff; margin: 15px; padding: 20px; border-radius: 14px; border: 1px solid #eee; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .select-input { background: #f5f5f5; border: 1px solid #ddd; padding: 10px 15px; border-radius: 8px; font-weight: bold; width: 120px; }
+
+        .cost-section { text-align: center; margin: 25px 15px; padding: 15px; border-top: 1px dashed #ddd; }
+        .cost-value { font-size: 22px; font-weight: 800; color: #222; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        
+        .btn-submit { background: #fe2c55; color: white; border: none; width: calc(100% - 30px); margin: 0 15px; padding: 15px; font-weight: bold; border-radius: 50px; cursor: pointer; position: fixed; bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-left">
+            <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
+            <h2>Campaign Setup</h2>
+        </div>
+        <div class="coin-display">
+            <span id="current-coins">0</span>
+            <i class="fa-solid fa-heart"></i>
+        </div>
+    </div>
+
+    <div id="ad-slot-1" class="ad-container"></div>
+
+    <div class="preview-card">
+        <div class="preview-icon"><i class="fa-brands fa-tiktok"></i></div>
+        <div class="preview-info">
+            <h4>Selected Video</h4>
+            <p id="target-link" style="font-size: 11px;">Loading...</p>
+        </div>
+    </div>
+
+    <div class="settings-box">
+        <div class="setting-row">
+            <div class="setting-label">Number of Views</div>
+            <select class="select-input" id="quantity-select" onchange="calculateTotalCost()">
+                <option value="25">25</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+                <option value="500">500</option>
+            </select>
+        </div>
+        <div class="setting-row">
+            <div class="setting-label">Required Time</div>
+            <select class="select-input" id="time-select" onchange="calculateTotalCost()">
+                <option value="15" selected>15 sec</option>
+                <option value="30">30 sec</option>
+                <option value="45">45 sec</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="ad-slot-2" class="ad-container"></div>
+
+    <div class="cost-section">
+        <span style="font-size: 14px;">Total Campaign Cost</span>
+        <div class="cost-value"><span id="total-cost">1500</span> <i class="fa-solid fa-heart"></i></div>
+    </div>
+
+    <button class="btn-submit" id="btn-create">Create Campaign</button>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARiMYvukztNqNFMeqR2QiOeaQvsRdAPFQ",
+            authDomain: "tikview-6f823.firebaseapp.com",
+            databaseURL: "https://tikview-6f823-default-rtdb.firebaseio.com",
+            projectId: "tikview-6f823",
+            storageBucket: "tikview-6f823.firebasestorage.app",
+            messagingSenderId: "448888345970",
+            appId: "1:448888345970:web:c0aaf62b31f71b1b0479eb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Ad Refresh Logic
+        function loadAds() {
+            const adCode = '<script async="async" data-cfasync="false" src="https://pl28732749.effectivecpmnetwork.com/76a43149f69231c82a24a42b99e96cb0/invoke.js"><\/script><div id="container-76a43149f69231c82a24a42b99e96cb0"><\/div>';
+            document.getElementById('ad-slot-1').innerHTML = adCode;
+            document.getElementById('ad-slot-2').innerHTML = adCode;
+        }
+        loadAds();
+        setInterval(loadAds, 15000);
+
+        // Core logic
+        const videoUrl = sessionStorage.getItem("pendingVideoUrl");
+        document.getElementById('target-link').innerText = videoUrl || "No link";
+
+        function calculateTotalCost() {
+            const qty = parseInt(document.getElementById('quantity-select').value);
+            const sec = parseInt(document.getElementById('time-select').value);
+            const cost = qty * (sec * 2); // साधारण हिसाब: १ सेकेन्डको २ कोइन्स
+            document.getElementById('total-cost').innerText = cost;
+            return cost;
+        }
+        calculateTotalCost();
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                database.ref('Users/' + user.uid + '/coins').on('value', s => document.getElementById('current-coins').innerText = (s.val() || 0).toLocaleString());
+            } else { window.location.href = "login.html"; }
+        });
+
+        document.getElementById('btn-create').addEventListener('click', () => {
+            const cost = calculateTotalCost();
+            const user = firebase.auth().currentUser;
+            
+            database.ref('Users/' + user.uid + '/coins').once('value').then(s => {
+                if((s.val() || 0) < cost) return alert("Not enough coins!");
+                
+                database.ref('Campaigns').push({
+                    userUID: user.uid,
+                    videoLink: videoUrl,
+                    campaignType: 'views',
+                    requiredCount: parseInt(document.getElementById('quantity-select').value),
+                    currentCount: 0,
+                    createdAt: Date.now()
+                }).then(() => {
+                    database.ref('Users/' + user.uid + '/coins').set((s.val() || 0) - cost);
+                    window.location.href = "home.html";
+                });
+            });
+        });
+    </script>
+</body>
+</html>
