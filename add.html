@@ -19,9 +19,6 @@
         .policy-list { list-style: none; }
         .policy-list li { margin-bottom: 8px; position: relative; padding-left: 15px; line-height: 1.4; opacity: 0.9; }
         .policy-list li::before { content: "•"; color: #fe2c55; font-weight: bold; position: absolute; left: 0; }
-        .guide-box { background: #fff; border: 1px dashed #ccc; margin: 15px; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; }
-        .guide-icon { font-size: 30px; color: #777; }
-        .guide-text p { font-size: 13px; color: #555; line-height: 1.4; }
         .input-section { background: #fff; margin: 15px; padding: 20px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #eee; }
         .input-label { font-size: 14px; font-weight: 600; color: #444; margin-bottom: 8px; display: block; }
         .input-wrapper { display: flex; align-items: center; background: #f1f1f1; border-radius: 50px; padding: 5px 5px 5px 15px; border: 1px solid #e0e0e0; transition: all 0.3s ease; }
@@ -31,8 +28,9 @@
         .btn-add { background: #fe2c55; color: white; border: none; padding: 10px 24px; border-radius: 50px; font-weight: bold; font-size: 14px; cursor: pointer; transition: background 0.2s; }
         .btn-add:active { transform: scale(0.96); }
         
-        /* Ads Styles */
-        .ad-container { width: 100%; min-height: 100px; margin: 10px 0; text-align: center; overflow: hidden; }
+        /* Ad Styles */
+        .ad-container-top { width: 100%; min-height: 60px; margin: 10px 0; text-align: center; display: flex; justify-content: center; align-items: center; background: #fff; }
+        .ad-container-bottom { width: 100%; min-height: 100px; margin: 20px 0; text-align: center; display: flex; justify-content: center; align-items: center; background: #f8f9fa; }
         
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 100; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; text-decoration: none; font-size: 12px; }
@@ -53,8 +51,12 @@
         </div>
     </div>
 
-    <!-- Ad Slot 1 -->
-    <div id="ad-slot-1" class="ad-container"></div>
+    <div id="top-ad-slot" class="ad-container-top">
+        <script type="text/javascript">
+            atOptions = { 'key' : '6eede0c59a7ac90fa38d5f0548f0e6a8', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/6eede0c59a7ac90fa38d5f0548f0e6a8/invoke.js"></script>
+    </div>
 
     <div class="policy-container">
         <h3><i class="fa-solid fa-circle-info"></i> Important Rules & Policies</h3>
@@ -65,9 +67,6 @@
         </ul>
     </div>
 
-    <!-- Ad Slot 2 -->
-    <div id="ad-slot-2" class="ad-container"></div>
-
     <div class="input-section">
         <label class="input-label">Paste TikTok Video Link Address</label>
         <div class="input-wrapper">
@@ -77,8 +76,10 @@
         </div>
     </div>
 
-    <!-- Ad Slot 3 -->
-    <div id="ad-slot-3" class="ad-container"></div>
+    <div id="bottom-ad-slot" class="ad-container-bottom">
+        <script async="async" data-cfasync="false" src="https://pl28732749.effectivecpmnetwork.com/76a43149f69231c82a24a42b99e96cb0/invoke.js"></script>
+        <div id="container-76a43149f69231c82a24a42b99e96cb0"></div>
+    </div>
 
     <div class="bottom-nav">
         <a href="home.html" class="nav-item active"><i class="fa-solid fa-rectangle-list"></i><span>Campaign</span></a>
@@ -112,16 +113,6 @@
                 window.location.href = "login.html";
             }
         });
-
-        // Ad Refresh Logic
-        function loadAds() {
-            const adCode = '<script async="async" data-cfasync="false" src="https://pl28732749.effectivecpmnetwork.com/76a43149f69231c82a24a42b99e96cb0/invoke.js"><\/script><div id="container-76a43149f69231c82a24a42b99e96cb0"><\/div>';
-            document.getElementById('ad-slot-1').innerHTML = adCode;
-            document.getElementById('ad-slot-2').innerHTML = adCode;
-            document.getElementById('ad-slot-3').innerHTML = adCode;
-        }
-        loadAds();
-        setInterval(loadAds, 15000);
 
         document.getElementById('btn-next').addEventListener('click', async () => {
             const urlInput = document.getElementById('video-url').value.trim();
