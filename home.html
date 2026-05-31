@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikViews - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Base Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #121212; color: #fff; padding-bottom: 100px; overflow-x: hidden; }
+
+        /* Top Bar Styling */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #1e1e1e; border-bottom: 1px solid #2a2a2a; position: sticky; top: 0; z-index: 999; }
+        .top-bar h2 { font-size: 20px; font-weight: 800; color: #fe2c55; letter-spacing: -0.5px; }
+        .coin-box { display: flex; align-items: center; gap: 8px; background: rgba(254, 44, 85, 0.1); padding: 8px 16px; border-radius: 25px; font-weight: bold; color: #fe2c55; border: 1px solid rgba(254, 44, 85, 0.2); }
+        .logout-icon { font-size: 20px; color: #888; cursor: pointer; padding: 5px; transition: 0.3s; }
+        .logout-icon:hover { color: #fe2c55; }
+
+        /* Welcome Section */
+        .welcome-card { padding: 25px 20px 15px; }
+        .welcome-card h3 { font-size: 24px; font-weight: 800; }
+        .welcome-card p { font-size: 14px; color: #aaa; margin-top: 5px; }
+
+        /* Ads Container */
+        .ad-container { width: 100%; min-height: 100px; margin: 20px 0; text-align: center; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.02); border: 1px dashed #333; }
+
+        /* Campaign List */
+        .section-title { font-size: 14px; font-weight: 700; color: #777; margin: 20px 20px 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .campaign-list { padding: 0 20px; display: flex; flex-direction: column; gap: 15px; }
+
+        /* Campaign Card */
+        .campaign-card { background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: 0.3s; }
+        .campaign-card:hover { border-color: #fe2c55; }
+        .card-top { display: flex; justify-content: space-between; align-items: center; }
+        .badge-views { background: rgba(0, 123, 255, 0.15); color: #007bff; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
+        .video-url-text { font-size: 13px; color: #ccc; background: #121212; padding: 10px; border-radius: 8px; border: 1px solid #2a2a2a; word-break: break-all; }
+
+        /* Progress Bar */
+        .progress-container { margin-top: 5px; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #eee; }
+        .progress-bar-bg { width: 100%; height: 10px; background: #333; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #fe2c55, #ff6b8b); width: 0%; border-radius: 10px; transition: width 0.5s ease; }
+
+        .empty-state { text-align: center; padding: 50px 20px; color: #555; font-size: 16px; }
+
+        /* FIXED: Floating Action Button - सधैं माथि देखिने गरी */
+        .fab-btn { 
+            position: fixed !important; 
+            bottom: 90px !important; 
+            right: 25px !important; 
+            width: 65px; 
+            height: 65px; 
+            background: #fe2c55; 
+            border-radius: 50%; 
+            display: flex !important; 
+            justify-content: center; 
+            align-items: center; 
+            color: white; 
+            font-size: 28px; 
+            z-index: 999999 !important; 
+            box-shadow: 0 8px 25px rgba(254, 44, 85, 0.4); 
+            text-decoration: none;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .fab-btn:active { transform: scale(0.85); }
+
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: #1e1e1e; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #2a2a2a; z-index: 9999; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; text-decoration: none; font-size: 12px; gap: 5px; flex: 1; height: 100%; transition: 0.3s; }
+        .nav-item.active { color: #fe2c55; }
+        .nav-item:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <h2>Tik<span>Views</span></h2>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="coin-box"><span id="user-coins">0</span><i class="fa-solid fa-heart"></i></div>
+            <i class="fa-solid fa-right-from-bracket logout-icon" onclick="triggerFirebaseLogout()"></i>
+        </div>
+    </div>
+
+    <div class="welcome-card">
+        <h3>Welcome Back!</h3>
+        <p>Your campaigns are being processed.</p>
+    </div>
+
+    <div id="ad-slot-1" class="ad-container"></div>
+
+    <div class="section-title">My Running Campaigns</div>
+    <div class="campaign-list" id="campaigns-display-engine">
+        <div class="empty-state"><i class="fa-solid fa-circle-notch fa-spin"></i><p>Syncing data...</p></div>
+    </div>
+
+    <div id="ad-slot-2" class="ad-container"></div>
+
+    <a href="add.html" class="fab-btn">
+        <i class="fa-solid fa-plus"></i>
+    </a>
+
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-item active"><i class="fa-solid fa-rectangle-list fa-lg"></i><span>Campaign</span></a>
+        <a href="views.html" class="nav-item"><i class="fa-solid fa-play fa-lg"></i><span>Views</span></a>
+        <a href="future.html" class="nav-item"><i class="fa-solid fa-sliders fa-lg"></i><span>Future</span></a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARiMYvukztNqNFMeqR2QiOeaQvsRdAPFQ",
+            authDomain: "tikview-6f823.firebaseapp.com",
+            databaseURL: "https://tikview-6f823-default-rtdb.firebaseio.com",
+            projectId: "tikview-6f823",
+            storageBucket: "tikview-6f823.firebasestorage.app",
+            messagingSenderId: "448888345970",
+            appId: "1:448888345970:web:c0aaf62b31f71b1b0479eb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function loadAds() {
+            const adCode = '<script async="async" data-cfasync="false" src="https://pl28732749.effectivecpmnetwork.com/76a43149f69231c82a24a42b99e96cb0/invoke.js"><\/script><div id="container-76a43149f69231c82a24a42b99e96cb0"><\/div>';
+            document.getElementById('ad-slot-1').innerHTML = adCode;
+            document.getElementById('ad-slot-2').innerHTML = adCode;
+        }
+        loadAds();
+        setInterval(loadAds, 20000);
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                database.ref('Users/' + user.uid + '/coins').on('value', (s) => document.getElementById('user-coins').innerText = (s.val() || 0).toLocaleString());
+                loadUserOwnCampaigns(user.uid);
+            } else { window.location.href = "login.html"; }
+        });
+
+        function loadUserOwnCampaigns(uid) {
+            database.ref('Campaigns').orderByChild('userUID').equalTo(uid).on('value', (snapshot) => {
+                const container = document.getElementById('campaigns-display-engine');
+                container.innerHTML = "";
+                if(snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const c = child.val();
+                        const percent = ((c.currentCount || 0) / (c.requiredCount || 1)) * 100;
+                        container.innerHTML += `
+                            <div class="campaign-card">
+                                <div class="card-top"><div class="badge-views"><i class="fa-solid fa-play"></i> Views</div></div>
+                                <div class="video-url-text">${c.videoLink}</div>
+                                <div class="progress-container">
+                                    <div class="progress-labels"><span>Progress</span><span>${c.currentCount || 0} / ${c.requiredCount || 1}</span></div>
+                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${percent}%"></div></div>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    container.innerHTML = `<div class="empty-state"><p>No active campaigns. Start one now!</p></div>`;
+                }
+            });
+        }
+
+        function triggerFirebaseLogout() {
+            if (confirm("Do you really want to logout?")) firebase.auth().signOut().then(() => window.location.href = "login.html");
+        }
+    </script>
+</body>
+</html>
