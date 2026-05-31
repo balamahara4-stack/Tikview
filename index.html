@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikViews - Welcome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* शून्य मार्जिन र प्याडिङ, पूरै मोबाइल स्क्रिन कभर गर्न */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* टिकटक जस्तै डार्क थिम ब्याकग्राउन्ड */
+        body {
+            background: #121212;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* मुख्य लोगो र कन्टेनर */
+        .splash-container {
+            text-align: center;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        /* टिकटक स्टाइलको ग्लिच इफेक्ट भएको लोगो आइकन */
+        .logo-box {
+            position: relative;
+            font-size: 70px;
+            color: #fff;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        /* TikViews को मुख्य ब्रान्डिङ अक्षर */
+        .brand-name {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .brand-name span {
+            color: #fe2c55; /* टिकटकको रैथाने रातो/गुलाबी रङ्ग */
+        }
+
+        .tagline {
+            font-size: 14px;
+            color: #aaaaaa;
+            font-weight: 400;
+        }
+
+        /* गोलो घुम्ने लोडिङ एनिमेसन (Loader) */
+        .loader {
+            margin-top: 50px;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #fe2c55;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* एनिमेसनहरू (Animations) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); text-shadow: 0 0 15px rgba(254, 44, 85, 0.6); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="splash-container">
+        <div class="logo-box">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+        
+        <div class="brand-name">Tik<span>Views</span></div>
+        <div class="tagline">Boost Views, Likes & Followers</div>
+        
+        <div style="display: flex; justify-content: center;">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <script>
+        // तपाईंको फायरबेस प्रोजेक्टको कन्फिगरेसन साँचोहरू
+        const firebaseConfig = {
+            apiKey: "AIzaSyARiMYvukztNqNFMeqR2QiOeaQvsRdAPFQ",
+            authDomain: "tikview-6f823.firebaseapp.com",
+            databaseURL: "https://tikview-6f823-default-rtdb.firebaseio.com",
+            projectId: "tikview-6f823",
+            storageBucket: "tikview-6f823.firebasestorage.app",
+            messagingSenderId: "448888345970",
+            appId: "1:448888345970:web:c0aaf62b31f71b1b0479eb",
+            measurementId: "G-SKT3V49CNZ"
+        };
+
+        // फायरबेस सुरु (Initialize) गर्ने
+        firebase.initializeApp(firebaseConfig);
+
+        // २ सेकेन्डको प्रफेक्ट टाइमआउट पछि लगइन स्थिति चेक गर्ने र पेज परिवर्तन गर्ने
+        setTimeout(() => {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    // यदि युजरले पहिले नै लगइन गरिसकेको छ भने सिधै views.html मा जाने
+                    window.location.href = "views.html";
+                } else {
+                    // यदि नयाँ युजर हो भने लगइन गराउन login.html मा पठाउने
+                    window.location.href = "login.html";
+                }
+            });
+        }, 2000); // २००० मिलिसेकेन्ड भनेको ठीक २ सेकेन्ड हो
+    </script>
+</body>
+</html>
