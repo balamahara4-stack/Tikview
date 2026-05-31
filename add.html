@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikViews - Add Video</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f8f9fa; padding-bottom: 80px; color: #333; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-left i { font-size: 20px; color: #333; cursor: pointer; }
+        .header h2 { font-size: 18px; font-weight: 700; color: #222; }
+        .coin-display { display: flex; align-items: center; gap: 5px; background: #fff0f3; padding: 6px 12px; border-radius: 20px; font-weight: bold; color: #fe2c55; }
+        .policy-container { background: #121212; color: #eee; margin: 15px; padding: 20px; border-radius: 14px; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .policy-container h3 { color: #fff; margin-bottom: 10px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .policy-list { list-style: none; }
+        .policy-list li { margin-bottom: 8px; position: relative; padding-left: 15px; line-height: 1.4; opacity: 0.9; }
+        .policy-list li::before { content: "•"; color: #fe2c55; font-weight: bold; position: absolute; left: 0; }
+        .guide-box { background: #fff; border: 1px dashed #ccc; margin: 15px; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; }
+        .guide-icon { font-size: 30px; color: #777; }
+        .guide-text p { font-size: 13px; color: #555; line-height: 1.4; }
+        .input-section { background: #fff; margin: 15px; padding: 20px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #eee; }
+        .input-label { font-size: 14px; font-weight: 600; color: #444; margin-bottom: 8px; display: block; }
+        .input-wrapper { display: flex; align-items: center; background: #f1f1f1; border-radius: 50px; padding: 5px 5px 5px 15px; border: 1px solid #e0e0e0; transition: all 0.3s ease; }
+        .input-wrapper:focus-within { border-color: #fe2c55; background: #fff; box-shadow: 0 0 8px rgba(254,44,85,0.1); }
+        .input-wrapper input { flex: 1; border: none; background: transparent; padding: 10px 5px; font-size: 14px; color: #222; outline: none; }
+        .tiktok-icon { font-size: 20px; color: #fe2c55; margin-right: 10px; }
+        .btn-add { background: #fe2c55; color: white; border: none; padding: 10px 24px; border-radius: 50px; font-weight: bold; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+        .btn-add:active { transform: scale(0.96); }
+        
+        /* Ads Styles */
+        .ad-container { width: 100%; min-height: 100px; margin: 10px 0; text-align: center; overflow: hidden; }
+        
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; text-decoration: none; font-size: 12px; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: #fe2c55; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-left">
+            <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
+            <h2>Create Campaign</h2>
+        </div>
+        <div class="coin-display">
+            <span id="user-coins">Loading...</span>
+            <i class="fa-solid fa-heart"></i>
+        </div>
+    </div>
+
+    <!-- Ad Slot 1 -->
+    <div id="ad-slot-1" class="ad-container"></div>
+
+    <div class="policy-container">
+        <h3><i class="fa-solid fa-circle-info"></i> Important Rules & Policies</h3>
+        <ul class="policy-list">
+            <li>Do not create multiple campaigns for the same video at the same time.</li>
+            <li>It may take some time for campaigns to be reflected on your TikTok profile.</li>
+            <li>Campaigns violating TikTok or TikViews policies will be deleted instantly.</li>
+        </ul>
+    </div>
+
+    <!-- Ad Slot 2 -->
+    <div id="ad-slot-2" class="ad-container"></div>
+
+    <div class="input-section">
+        <label class="input-label">Paste TikTok Video Link Address</label>
+        <div class="input-wrapper">
+            <i class="fa-brands fa-tiktok tiktok-icon"></i>
+            <input type="text" id="video-url" placeholder="Paste link here..." autocomplete="off">
+            <button class="btn-add" id="btn-next">Add</button>
+        </div>
+    </div>
+
+    <!-- Ad Slot 3 -->
+    <div id="ad-slot-3" class="ad-container"></div>
+
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-item active"><i class="fa-solid fa-rectangle-list"></i><span>Campaign</span></a>
+        <a href="views.html" class="nav-item"><i class="fa-solid fa-play"></i><span>Views</span></a>
+        <a href="future.html" class="nav-item"><i class="fa-solid fa-sliders"></i><span>Future</span></a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARiMYvukztNqNFMeqR2QiOeaQvsRdAPFQ",
+            authDomain: "tikview-6f823.firebaseapp.com",
+            databaseURL: "https://tikview-6f823-default-rtdb.firebaseio.com",
+            projectId: "tikview-6f823",
+            storageBucket: "tikview-6f823.firebasestorage.app",
+            messagingSenderId: "448888345970",
+            appId: "1:448888345970:web:c0aaf62b31f71b1b0479eb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                database.ref('Users/' + user.uid + '/coins').on('value', (snapshot) => {
+                    document.getElementById('user-coins').innerText = (snapshot.val() || 0).toLocaleString();
+                });
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Ad Refresh Logic
+        function loadAds() {
+            const adCode = '<script async="async" data-cfasync="false" src="https://pl28732749.effectivecpmnetwork.com/76a43149f69231c82a24a42b99e96cb0/invoke.js"><\/script><div id="container-76a43149f69231c82a24a42b99e96cb0"><\/div>';
+            document.getElementById('ad-slot-1').innerHTML = adCode;
+            document.getElementById('ad-slot-2').innerHTML = adCode;
+            document.getElementById('ad-slot-3').innerHTML = adCode;
+        }
+        loadAds();
+        setInterval(loadAds, 15000);
+
+        document.getElementById('btn-next').addEventListener('click', async () => {
+            const urlInput = document.getElementById('video-url').value.trim();
+            const btn = document.getElementById('btn-next');
+            const user = firebase.auth().currentUser;
+
+            if (!urlInput.includes("tiktok.com")) {
+                alert("कृपया सहि टिकटक लिङ्क हाल्नुहोस्!");
+                return;
+            }
+
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(urlInput, { method: 'GET', redirect: 'follow' });
+                const finalUrl = response.url;
+                
+                database.ref('Campaigns/' + user.uid).push({
+                    videoUrl: finalUrl,
+                    status: "pending",
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+
+                sessionStorage.setItem("pendingVideoUrl", finalUrl);
+                window.location.href = "comparing.html";
+            } catch (error) {
+                alert("लिङ्क प्रोसेस गर्दा त्रुटि आयो, फेरि प्रयास गर्नुहोस्।");
+                btn.innerText = "Add";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
