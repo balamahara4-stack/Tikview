@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikViews - Secure Access Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Styling - Clean & Modern Dark Mode */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0f0f0f; height: 100vh; display: flex; justify-content: center; align-items: center; color: #ffffff; padding: 20px; }
+        .auth-card { width: 100%; max-width: 420px; background: #1a1a1a; padding: 40px; border-radius: 28px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); text-align: center; border: 1px solid #333; }
+        .logo-area { margin-bottom: 20px; }
+        .logo-area i { font-size: 60px; color: #fe2c55; }
+        .app-name { font-size: 28px; font-weight: 900; margin-bottom: 10px; }
+        .app-name span { color: #fe2c55; }
+        .info-text { font-size: 14px; color: #888; margin-bottom: 30px; }
+
+        .form-group { position: relative; margin-bottom: 20px; text-align: left; }
+        .form-group i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #555; }
+        .form-control { width: 100%; background: #000; border: 1px solid #333; padding: 15px 15px 15px 50px; border-radius: 14px; color: #fff; font-size: 15px; }
+        .form-control:focus { border-color: #fe2c55; outline: none; }
+
+        .btn-action { width: 100%; background: #fe2c55; color: white; border: none; padding: 16px; font-weight: 800; border-radius: 14px; cursor: pointer; transition: 0.3s; }
+        .btn-action:hover { background: #e02447; box-shadow: 0 5px 15px rgba(254, 44, 85, 0.3); }
+
+        .toggle-container { margin-top: 25px; font-size: 14px; color: #666; }
+        .toggle-link { color: #fe2c55; font-weight: bold; cursor: pointer; margin-left: 5px; }
+        
+        .loading-box { display: none; margin-top: 25px; }
+        .spinner { width: 30px; height: 30px; border: 4px solid #333; border-top: 4px solid #fe2c55; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="logo-area"><i class="fa-solid fa-bolt"></i></div>
+        <div class="app-name">Tik<span>Views</span></div>
+        <p class="info-text" id="panel-desc">Secure access to your growth dashboard</p>
+
+        <form id="auth-form">
+            <div class="form-group" id="name-field" style="display: none;">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="user-fullname" class="form-control" placeholder="Full Name">
+            </div>
+            <div class="form-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="user-email" class="form-control" placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="user-password" class="form-control" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-action" id="submit-btn">Login Account</button>
+        </form>
+
+        <div class="toggle-container" id="toggle-area">
+            Don't have an account?<span class="toggle-link" onclick="toggleMode()">Register Now</span>
+        </div>
+
+        <div class="loading-box" id="loading-area">
+            <div class="spinner"></div>
+            <p id="loading-text">Authenticating...</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARiMYvukztNqNFMeqR2QiOeaQvsRdAPFQ",
+            authDomain: "tikview-6f823.firebaseapp.com",
+            databaseURL: "https://tikview-6f823-default-rtdb.firebaseio.com",
+            projectId: "tikview-6f823",
+            storageBucket: "tikview-6f823.firebasestorage.app",
+            messagingSenderId: "448888345970",
+            appId: "1:448888345970:web:c0aaf62b31f71b1b0479eb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let isRegister = false;
+
+        function toggleMode() {
+            isRegister = !isRegister;
+            document.getElementById('name-field').style.display = isRegister ? 'block' : 'none';
+            document.getElementById('submit-btn').innerText = isRegister ? 'Register Account' : 'Login Account';
+            document.getElementById('panel-desc').innerText = isRegister ? 'Join TikViews and get 200 bonus coins!' : 'Sign in to boost your TikTok growth';
+            document.getElementById('toggle-area').innerHTML = isRegister ? 
+                `Already have an account? <span class="toggle-link" onclick="toggleMode()">Login Here</span>` : 
+                `Don't have an account? <span class="toggle-link" onclick="toggleMode()">Register Now</span>`;
+        }
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('user-email').value;
+            const pass = document.getElementById('user-password').value;
+            const name = document.getElementById('user-fullname').value;
+            
+            document.getElementById('auth-form').style.display = 'none';
+            document.getElementById('loading-area').style.display = 'block';
+
+            try {
+                if (isRegister) {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
+                    // Database मा युजर प्रोफाइल सेट गर्ने
+                    await db.ref('Users/' + userCredential.user.uid).set({
+                        name: name,
+                        email: email,
+                        coins: 200,
+                        createdAt: new Date().toLocaleString()
+                    });
+                    window.location.href = "home.html";
+                } else {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                    window.location.href = "home.html";
+                }
+            } catch (error) {
+                alert("Error: " + error.message);
+                document.getElementById('auth-form').style.display = 'block';
+                document.getElementById('loading-area').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
