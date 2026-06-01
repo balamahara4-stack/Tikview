@@ -60,7 +60,7 @@
         <ul class="policy-list">
             <li>Do not create multiple campaigns for the same video at the same time.</li>
             <li>It may take some time for campaigns to be reflected on your TikTok profile.</li>
-            <li>Campaigns violating TikTok or TikViews policies will be deleted instantly.</li>
+            <li>Only paste the original long link copied from Chrome.</li>
         </ul>
     </div>
 
@@ -68,7 +68,7 @@
         <label class="input-label">Paste TikTok Video Link Address</label>
         <div class="input-wrapper">
             <i class="fa-brands fa-tiktok tiktok-icon"></i>
-            <input type="text" id="video-url" placeholder="Paste link here..." autocomplete="off">
+            <input type="text" id="video-url" placeholder="Paste long link here..." autocomplete="off">
             <button class="btn-add" id="btn-next">Add</button>
         </div>
     </div>
@@ -111,36 +111,25 @@
             }
         });
 
-        // बटनमा 'Adding...' मात्र राख्ने, कुनै बाह्य सर्भर कल नगर्ने
-        document.getElementById('btn-next').addEventListener('click', async () => {
+        document.getElementById('btn-next').addEventListener('click', () => {
             const urlInput = document.getElementById('video-url').value.trim();
-            const btn = document.getElementById('btn-next');
             const user = firebase.auth().currentUser;
 
-            if (!urlInput.includes("tiktok.com")) {
-                alert("कृपया सहि टिकटक लिङ्क हाल्नुहोस्!");
+            // Strict Validation: tiktok.com र /video/ दुवै हुनुपर्छ (लामो लिङ्कको लागि)
+            if (!urlInput.includes("tiktok.com") || !urlInput.includes("/video/")) {
+                alert("Error: कृपया टिकटकको लामो (Original) लिङ्क मात्र हाल्नुहोस्। छोटो लिङ्क मान्य छैन!");
                 return;
             }
 
-            btn.disabled = true;
-            btn.innerText = "Adding...";
+            // डेटाबेसमा सिधै सेभ गर्ने
+            database.ref('Campaigns/' + user.uid).push({
+                videoUrl: urlInput,
+                status: "pending",
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
 
-            try {
-                // लिङ्कलाई डेटाबेसमा सुरक्षित रूपमा सेभ गर्ने
-                await database.ref('Campaigns/' + user.uid).push({
-                    videoUrl: urlInput,
-                    status: "pending",
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-
-                // लिङ्कलाई sessionStorage मा राखेर अर्को पेजमा जाने
-                sessionStorage.setItem("pendingVideoUrl", urlInput);
-                window.location.href = "comparing.html";
-            } catch (error) {
-                btn.disabled = false;
-                btn.innerText = "Add";
-                alert("डाटाबेसमा त्रुटि भयो, कृपया फेरि प्रयास गर्नुहोस्।");
-            }
+            sessionStorage.setItem("pendingVideoUrl", urlInput);
+            window.location.href = "comparing.html";
         });
     </script>
 </body>
