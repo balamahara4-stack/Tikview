@@ -111,6 +111,7 @@
             }
         });
 
+        // बटनमा 'Adding...' मात्र राख्ने, कुनै बाह्य सर्भर कल नगर्ने
         document.getElementById('btn-next').addEventListener('click', async () => {
             const urlInput = document.getElementById('video-url').value.trim();
             const btn = document.getElementById('btn-next');
@@ -122,22 +123,23 @@
             }
 
             btn.disabled = true;
-            btn.innerText = "Saving...";
+            btn.innerText = "Adding...";
 
             try {
-                // लिङ्क नबदली सिधै डेटाबेसमा पठाउने
+                // लिङ्कलाई डेटाबेसमा सुरक्षित रूपमा सेभ गर्ने
                 await database.ref('Campaigns/' + user.uid).push({
                     videoUrl: urlInput,
                     status: "pending",
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
 
+                // लिङ्कलाई sessionStorage मा राखेर अर्को पेजमा जाने
                 sessionStorage.setItem("pendingVideoUrl", urlInput);
                 window.location.href = "comparing.html";
             } catch (error) {
                 btn.disabled = false;
                 btn.innerText = "Add";
-                alert("डाटाबेसमा समस्या आयो। कृपया फेरि प्रयास गर्नुहोस्।");
+                alert("डाटाबेसमा त्रुटि भयो, कृपया फेरि प्रयास गर्नुहोस्।");
             }
         });
     </script>
