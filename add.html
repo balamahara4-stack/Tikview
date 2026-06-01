@@ -124,9 +124,16 @@
             btn.innerText = "Processing...";
             btn.disabled = true;
 
+            // CORS Proxy प्रयोग गर्दै लिङ्क बदल्नको लागि
+            const proxyUrl = "https://api.allorigins.win/get?url=";
+            
             try {
-                const response = await fetch(urlInput, { method: 'GET', redirect: 'follow' });
-                const finalUrl = response.url;
+                // हामी सिधै URL मा फेच गर्दैनौं, प्रोक्सी मार्फत गर्छौं
+                const response = await fetch(proxyUrl + encodeURIComponent(urlInput));
+                const data = await response.json();
+                
+                // data.status.url ले रिडिरेक्ट भएको अन्तिम URL दिन्छ
+                const finalUrl = data.status.url || urlInput;
                 
                 database.ref('Campaigns/' + user.uid).push({
                     videoUrl: finalUrl,
@@ -137,9 +144,14 @@
                 sessionStorage.setItem("pendingVideoUrl", finalUrl);
                 window.location.href = "comparing.html";
             } catch (error) {
-                alert("लिङ्क प्रोसेस गर्दा त्रुटि आयो, फेरि प्रयास गर्नुहोस्।");
-                btn.innerText = "Add";
-                btn.disabled = false;
+                // यदि कुनै कारणले प्रोक्सीले काम गरेन भने, ओरिजिनल लिङ्क नै पठाउने
+                database.ref('Campaigns/' + user.uid).push({
+                    videoUrl: urlInput,
+                    status: "pending",
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                sessionStorage.setItem("pendingVideoUrl", urlInput);
+                window.location.href = "comparing.html";
             }
         });
     </script>
