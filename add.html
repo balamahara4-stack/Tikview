@@ -124,18 +124,18 @@
             btn.innerText = "Processing...";
             btn.disabled = true;
 
-            // CORS Proxy प्रयोग गर्दै लिङ्क बदल्नको लागि
-            const proxyUrl = "https://api.allorigins.win/get?url=";
-            
             try {
-                // हामी सिधै URL मा फेच गर्दैनौं, प्रोक्सी मार्फत गर्छौं
-                const response = await fetch(proxyUrl + encodeURIComponent(urlInput));
+                // छिटो नतिजाको लागि प्रोक्सी कल
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000); // ८ सेकेन्डको टाइमआउट
+
+                const response = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(urlInput), { signal: controller.signal });
                 const data = await response.json();
+                clearTimeout(timeoutId);
+
+                const finalUrl = (data.status && data.status.url) ? data.status.url : urlInput;
                 
-                // data.status.url ले रिडिरेक्ट भएको अन्तिम URL दिन्छ
-                const finalUrl = data.status.url || urlInput;
-                
-                database.ref('Campaigns/' + user.uid).push({
+                await database.ref('Campaigns/' + user.uid).push({
                     videoUrl: finalUrl,
                     status: "pending",
                     timestamp: firebase.database.ServerValue.TIMESTAMP
@@ -143,9 +143,10 @@
 
                 sessionStorage.setItem("pendingVideoUrl", finalUrl);
                 window.location.href = "comparing.html";
+
             } catch (error) {
-                // यदि कुनै कारणले प्रोक्सीले काम गरेन भने, ओरिजिनल लिङ्क नै पठाउने
-                database.ref('Campaigns/' + user.uid).push({
+                // प्रोक्सी फेल भए पनि काम जारी राख्ने
+                await database.ref('Campaigns/' + user.uid).push({
                     videoUrl: urlInput,
                     status: "pending",
                     timestamp: firebase.database.ServerValue.TIMESTAMP
